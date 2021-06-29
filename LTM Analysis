@@ -1,0 +1,83 @@
+  TITLE: CTA LTM Fitting 
+         Aggregated Data (4 Time Points)
+         Measurement Invariance 
+         Time-varying Random Intercept Model 
+         Time-varying Transition Probs
+         Fixed Covariate Effects ;
+
+  DATA:	FILE = cta_es01_part4.csv ;
+  ! Observations from one unit (es01) on the same day
+  ! Data partitioned to have 4 time points
+
+  VARIABLE:	
+  NAMES = ID grade racebl racehn sex frl esl pre post gain 
+          ltime1-ltime4 cerr1-cerr4 chint1-chint4 lprob1-lprob4;
+
+  MISSING = all (9999); 
+
+  USEVARIABLES = racebl racehn sex frl pre gain
+                 ltime1-ltime4 cerr1-cerr4 chint1-chint4 ;
+  
+  CLASSES = c1(2) c2(2) c3(2) c4(2);  
+
+  ANALYSIS:	
+  TYPE = MIXTURE;
+  STARTS = 100 20;
+  ALGORITHM = EM; !INTEGRATION; ! INTEGRATION EM; 
+
+  MODEL:
+  %OVERALL%
+
+  ! Regress later class on the preceding one
+  c2#1 on c1#1 ;
+  c3#1 on c2#1 ;
+  c4#1 on c3#1 ;
+  
+  ! Regress on the covariates
+  c1#1 on racebl racehn sex frl pre gain (p1-p6) ;
+  c2#1 on racebl racehn sex frl pre gain (p1-p6) ;
+  c3#1 on racebl racehn sex frl pre gain (p1-p6) ;
+  c4#1 on racebl racehn sex frl pre gain (p1-p6) ;
+  
+
+  ! Random intercept 
+  f by ltime1* cerr1 chint1 
+       ltime2  cerr2 chint2 
+       ltime3  cerr3 chint3  
+       ltime4  cerr4 chint4  ;
+       f@1; 
+       [f@0];
+
+
+  MODEL c1:
+  %c1#1%
+  [ltime1 cerr1 chint1](101-103);
+
+  %c1#2%
+  [ltime1 cerr1 chint1](104-106);    
+
+  MODEL c2:
+  %c2#1%
+  [ltime2 cerr2 chint2](101-103);
+
+  %c2#2%
+  [ltime2 cerr2 chint2](104-106);  
+
+  MODEL c3:
+  %c3#1%
+  [ltime3 cerr3 chint3](101-103);
+
+  %c3#2%
+  [ltime3 cerr3 chint3](104-106);  
+
+  MODEL c4:
+  %c4#1%
+  [ltime4 cerr4 chint4](101-103);
+
+  %c4#2%
+  [ltime4 cerr4 chint4](104-106); 
+
+
+ SAVEDATA: 
+  file = CTA_SC_Agg4_2C_MIC_VRI_FC.dat;
+  save = cprob;
