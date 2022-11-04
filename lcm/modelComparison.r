@@ -1,7 +1,3 @@
-load('mod.RData')
-load('fit1class.RData')
-load('prelimMods.RData')
-
 ppp1 <- parList(fit1)
 
 logLiks <- c(
@@ -34,29 +30,6 @@ npar <- c(
         sdat$ncov # beta
 )
 
-npar2 <- c(
-    oneClass=
-        4+ # parameters that vary by class (x1)
-        3*sdat$nprob+ #problem intercepts for each indicator
-        4, #ordered logit intercepts for hints & errors
-    twoClass=
-          4*2+ # parameters that vary by class (x1)
-        3*sdat$nprob+ #problem intercepts for each indicator
-        4+ #ordered logit intercepts for hints & errors
-        1, # alpha = class prob
-    twoClassStud=
-        4*2+ # parameters that vary by class (x1)
-        3*sdat$nprob+ #problem intercepts for each indicator
-        4+ #ordered logit intercepts for hints & errors
-        2, # mean and var of student effects
-    twoClassCovs=
-        4*2+ # parameters that vary by class (x1)
-        3*sdat$nprob+ #problem intercepts for each indicator
-        4+ #ordered logit intercepts for hints & errors
-        2+ # mean and var of student effects
-        sdat$ncov # beta
-)
-
 
 bics <- npar*log(sdat$nworked)-2*logLiks
 aics <- 2*(npar-logLiks)
@@ -74,7 +47,4 @@ fitTab <- tibble(
     ABIC=abics
 )
 
-save_as_docx(flextable(fitTab),path='../../../Manuscript/lcaTabs/lcaFit.docx')
-
-bics2 <- npar2*log(sdat$nworked)-2*logLiks
-aics2 <- 2*(npar2-logLiks)
+save_as_docx(flextable(fitTab),path='lcaFit.docx')

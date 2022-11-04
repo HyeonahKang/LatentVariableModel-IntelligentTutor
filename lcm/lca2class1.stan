@@ -16,7 +16,7 @@ data {
 
   vector[3] zeros;
 
-  real<lower=0> sigStud;
+//  real<lower=0> sigStud;
 
 }
 
@@ -35,7 +35,7 @@ parameters {
   real alpha;
   
   vector[nstud] studEff;
-  //real<lower=0> sigStud;
+  real<lower=0> sigStud;
 
   ordered[2] cHint;
   ordered[2] cErr;
@@ -56,7 +56,7 @@ model{
  effHint~normal(0,5);
  effErr~normal(0,5);
  sigProb~normal(0,1);
- //sigStud~normal(0,1);
+ sigStud~normal(0,1);
 
  studEff~normal(0,sigStud);
 

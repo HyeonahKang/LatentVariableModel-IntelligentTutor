@@ -15,24 +15,27 @@ data {
   matrix[nstud,ncov] X;
 
   vector[3] zeros;
+
+  //real<lower=0> sigStud;
+
 }
 
 parameters {
 
   real meanTime[2];
-  real sigTime[2];
+  real<lower=0> sigTime[2];
   real effHint[2];
   real effErr[2];
 
   vector[3] probEff[nprob]; // hint, err, time
 
   corr_matrix[3] OmegaProb;
-  vector[3] sigProb;
+  vector<lower=0>[3] sigProb;
   
   real alpha;
   
-  //vector[nstud] studEff;
-  //real sigStud;
+  vector[nstud] studEff;
+  real<lower=0> sigStud;
 
   vector[ncov] beta;
 
@@ -41,7 +44,8 @@ parameters {
 
 }
 transformed parameters {
-  vector[nstud] nu=inv_logit(alpha+X*beta); //+studEff);
+//model{
+  vector[nstud] nu=inv_logit(alpha+X*beta+studEff);
   
   cov_matrix[3] SigmaProb=quad_form_diag(OmegaProb, sigProb);
 }
@@ -54,10 +58,10 @@ model{
  effHint~normal(0,5);
  effErr~normal(0,5);
  sigProb~normal(0,1);
- //sigStud~normal(0,1);
+ sigStud~normal(0,1);
  to_vector(beta)~normal(0,1);
 
- //studEff~normal(0,sigStud);
+ studEff~normal(0,sigStud);
 
  probEff~multi_normal(zeros,SigmaProb);
 
