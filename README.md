@@ -1,2 +1,2 @@
 # SELS
-LTM and HMM Analysis
+LCM, LTM and HMM Analysis
